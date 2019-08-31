@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base target="_blank">
+  <meta name="description" content="Caculates the value of a jar of coins">
+  <meta name="keywords" content="coins, value, spare change, weight, jar, coin jar, Aaron Stanek, about, how">
+  <meta name="author" content="Aaron Stanek">
+  <title>About</title>
+  <script src="coin_value.js"></script>
+  <script src="coins.js"></script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-124583484-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-124583484-2');
+  </script>
+</head>
+<body>
+    <h2>Spare Change Calculator</h2>
+    <p><a href="/">Take me to the calculator!</a></p>
+    <hr><br>
+    <p>
+        This calculator estimates the value of spare change by weight.
+    </p>
+    <h3>
+        Legal
+    </h3>
+    <p>
+        Do not make decisions based on any information on this website.
+        The website, the program, and the author are not responsible for
+        your bad decisions.
+    </p>
+    <h3>
+        Manual Sample
+    </h3>
+    <p>
+        Using the manual sample option, the operation is fairly straightforward.
+        The user-provided sample tells the calculator about the ratios of each
+        denomination of coin. The calculator already knows the weight of each denomination
+        of coin. So it can then compute the value of the sample by summing the values of
+        all the user-specified coins, and it can compute the weight of the sample by summing
+        together the weight of the user-specified coins. Dividing these gives the value per gram.
+        Then it just multiplies this by the number of grams in the whole jar to estimate the value.
+    </p>
+    <h3>
+        Automatic Sample
+    </h3>
+    <p>
+        The automatic sample is a bit trickier to explain. The calculator needs to be able to figure
+        out the ratio of the denominations without the user giving it a sample. To do this, it
+        assumes that all amounts of change recieved back from a financial transaction, modulo the
+        value of the smallest denomination of bill, are equally likely.
+    </p>
+    <p>
+        To see why this might be
+        a reasonable assumption, imagine some arbitary continuous probability distribution. Then cut it into equally
+        sized slices, where the width, δ, of a slice is much smaller than the width of the distribution.
+        Importantly, the variation of the distribution within each slice should be negligible.
+        Then create a second distribution defined between zero and δ. The probability density at some value x
+        in this second distribution is equal to the sum of the probability density in each slice
+        of the first distribution at a distance x from the left edge of the slice.
+        Because the variation of the first distribution is negligible within each slice, we can treat them as a collection
+        of constant distributions. The sum of constant distributions must be a constant distribution.
+        What this means in terms of the calculator is that if the vast majority of transactions involve the exchange of values larger
+        than the value of the smallest denomination of bill (δ), and if the difference between the price of something,
+        and the money given for payment is "random enough", then all amounts of change recieved back from a financial transaction,
+        modulo the value of the smallest denomination of bill (δ), are equally likely.
+    </p>
+    <p>
+        The next assumption is that change will always be given using the smallest number of coins possible.
+        This is standard practice in most of world.
+        The third and final assumption is that people are not selectively using coins of one denomination while ignore coins
+        of other denominations. For example, in the United States, Quarters (25¢) are accepted by many automatic payment
+        machines, while other denominations are generally not accepted. The third assumption utilizes the idea that coins
+        that end up in spare change jars generally aren't being used to pay for things, and are therefore immune to any selective
+        useage effects.
+    </p>
+    <p>
+        With these assumptions, it is possible to iterate over all values less then the value of the smallest denomination of
+        bill. And, at each value, determine how to represent the value using the smallest number of coins possible.
+        Through this process, one can keep track of how many times each denomination is used.
+        The collection of coins used throughout this iteration becomes the sample.
+        This sample can then be treated identially to a user-provided sample, as if we were using
+        the manual sample option.
+    </p>
+    <h3>
+        Important notes:
+    </h3>
+    <ul>
+        <li><p>
+            When computing the minimum value of the range, it is assumed that the jar contains only
+            the coin with the lowest value per gram and that the weight was overestimated by 10%.
+        </p></li>
+        <li><p>
+            When computing the maximum value of the range, it is assumed that the jar contains only
+            the coin with the highest value per gram and that the weight was underestimated by 10%.
+        </p></li>
+        <li><p>
+            The automatic sample will work correctly for all the currencies
+            listed, except the Indian Rupee where it will overestimate the number of ₹10 coins.
+        </p>
+        <p>
+            The automatic sample only works if, within a currency, no bill and coin share a value.
+            Several currencies included in this program violate this assumption, however, in most of these cases
+            there is a strong enough preference for the bill or the coin that the other can be ignored.
+            Two currencies violate this without a strong preference for either bill or coin.
+            The Chiniese Renminbi has a bill equivilent for each coin. It is assumed that
+            as long as each set of change received uses only the bill form or only the coin form, and that the decision of
+            which to use is not influenced by the values involved, then the bills with coin value can be safely ignored.
+            The other currency is the Indian Rupee. The ₹10 bill and the ₹10 coin both have wide enough circulation that neither
+            can be ignored. And, unlike the Chinese Renminbi, we cannot assume that change is received entirely as bills
+            or coins. 
+        </p></li>
+        <li><p>
+            In all but one case, the weight of the coins was determined from publically available
+            information on government mint websites.
+            The People's Bank of China does not publically release information about the Chinese Renminbi.
+            For this case, the weight of each denomination was determined by comparing values listed on
+            coin auction websites. The weights for the Chiniese Renminbi used by this program should be accurate
+            to within 2, maybe 3, significant figures, on par with the information available for other currencies.
+        </p></li>
+        <li><p>
+            The decision of which currencies to include was not political in nature.
+            Those currencies included are those with the largest global circulation.
+            Some currencies which should have been included under this criterion were
+            ommited because determining the weight of each denomination of coin proved
+            to be too difficult. If you wish to include another currency, please create
+            a pull request <a href="https://github.com/coin-jar-value/coin-jar-value.github.io">here</a>,
+            providing a source for the weights of the coins in the comments.
+        </p></li>
+    </ul>
+    <h3>
+        The Author
+    </h3>
+    <p>
+        This program was created by Aaron Stanek in 2019.
+    </p>
+    <p>
+        <a href="https://aaronstanek.github.io/">The author's website</a>
+    </p>
+</body>
+</html>
